@@ -40,11 +40,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.save:{
                 String writeText = theArticle.getText().toString();
 
-                originator.set(writeText);
-                caretaker.addMemento(originator.storeInMemento());
                 currentArticle++;
+                originator.setArticle(writeText);
+                caretaker.addMemento(originator.createMemento(), true);
 
-                saveFiles++;
                 undoButton.setEnabled(true);
                 theArticle.getText().clear();
 
@@ -53,25 +52,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             break;
             }
             case R.id.undo:{
-                if(currentArticle > -1){
-                    String textBoxString = originator.restoreFromMemento( caretaker.getMemento(currentArticle) );
+                if(currentArticle > 0){
                     currentArticle--;
-                    theArticle.setText(textBoxString);
+                    originator.restore( caretaker.getMemento(currentArticle) );
+
+                    theArticle.setText(originator.getArticle());
                     redoButton.setEnabled(true);
+
+                    String tempSaveText = saveText.getText().toString();
+                    int len = originator.getArticle().length();
+                    saveText.setText(tempSaveText.substring(0, tempSaveText.length() - len));
                 } else {
                     undoButton.setEnabled(false);
                 }
                 break;
             }
             case R.id.redo:{
-                if((saveFiles - 1) > currentArticle){
+                //if((saveFiles - 1) > currentArticle){
                     currentArticle++;
-                    String textBoxString = originator.restoreFromMemento( caretaker.getMemento(currentArticle) );
-                    theArticle.setText(textBoxString);
+
+                    Memento memento = caretaker.getMemento(currentArticle);
+
+                    if(memento == null){
+                        currentArticle--;
+                        return;
+                    }
+
+                    originator.restore( memento );
+                    theArticle.setText(originator.getArticle());
+                    saveText.setText(saveText.getText() + originator.getArticle());
+
                     undoButton.setEnabled(true);
-                } else {
+                /*} else {
                     redoButton.setEnabled(false);
-                }
+                }*/
                 break;
                 }
             }

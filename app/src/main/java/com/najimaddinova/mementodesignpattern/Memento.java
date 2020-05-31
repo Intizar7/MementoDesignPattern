@@ -2,14 +2,14 @@ package com.najimaddinova.mementodesignpattern;
 
 public class Memento {
 
-    private String article;
+    private final String article;
 
-    public Memento(String articleSave)
+    public Memento(String article)
     {
-        article = articleSave;
+        this.article = article;
     }
 
-    public String getSavedArticle()
+    public String getArticle()
     {
         return article;
     }
